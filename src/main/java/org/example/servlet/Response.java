@@ -33,7 +33,8 @@ public class Response {
         resBuffer.newLine();
         resBuffer.newLine();
 //        renderResult(resBuffer, msg);
-        renderContent(resBuffer, msg);
+        renderParameter(resBuffer, msg);
+        renderContent(resBuffer,msg);
         resBuffer.flush();
     }
 
@@ -58,8 +59,9 @@ public class Response {
         out.write("</body>");
         out.write("</html>");
     }
-    private void renderContent (BufferedWriter out,List<String> headers) throws IOException {
+    private void renderParameter(BufferedWriter out, List<String> headers) throws IOException {
         Iterator<String> it = headers.iterator();
+        out.write("your arguments is : ");
         while (it.hasNext()) {
             out.write(it.next());
             if (it.hasNext()) {
@@ -67,4 +69,12 @@ public class Response {
             }
         }
     }
+    private void renderContent (BufferedWriter out,List<String> headers) throws IOException {
+        Iterator<String> it = headers.iterator();
+        out.write("\nyour content is : \n");
+        while (it.hasNext()) {
+            out.write(it.next()+"\n");
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import org.example.dbrepo.StudentRepo;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Optional;
 
 @WebServlet(name = "Myservlet", urlPatterns = {"/myservlet"})
 public class Myservlet implements CustomServlet {
@@ -29,8 +30,8 @@ public class Myservlet implements CustomServlet {
     @Override
     public void doGet(Request request, Response response) {
         System.out.println("Myservlet.doGet");
-        try {
-//            request.getParameter();
+        try (StudentRepo repo = new StudentRepo();) {
+            repo.connect();
             response.setContentType("text/html;charset=UTF-8");
 //            OutputStreamWriter client = response.getWriter();
 //            client.write("hello world");
@@ -56,8 +57,12 @@ public class Myservlet implements CustomServlet {
             for (String name : request.getparameterNames()) {
                 response.write(name + "=" + request.getParameterValues(name));
             }
+            Optional<Student> call = repo.findbyId(Integer.parseInt(request.getParameterValues("id")));
+            response.write("id : "+String.valueOf(call.get().getId())+
+                                "\nusername : " + String.valueOf(call.get().getUsername())+
+                                "\npassword : " + String.valueOf(call.get().getPassword()));
             response.flush();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
