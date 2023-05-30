@@ -1,0 +1,7 @@
+POST http://localhost:8080/ HTTP/1.1
+Content-Type: text/plain
+
+{id=2&name=jj}
+###
+GET http://localhost:8080/?id=11&name=oo HTTP/1.1
+Content-Type: text/plain
