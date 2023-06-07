@@ -6,9 +6,9 @@ import org.example.dbmodel.Student;
 import org.example.dbrepo.StudentRepo;
 
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.Optional;
+import java.util.Scanner;
 
 @WebServlet(name = "Myservlet", urlPatterns = {"/myservlet"})
 public class Myservlet implements CustomServlet {
@@ -28,41 +28,31 @@ public class Myservlet implements CustomServlet {
     }
 
     @Override
-    public void doGet(Request request, Response response) {
+    public void doGet(Request request, Response response) throws IOException {
         System.out.println("Myservlet.doGet");
         try (StudentRepo repo = new StudentRepo();) {
             repo.connect();
-            response.setContentType("text/html;charset=UTF-8");
-//            OutputStreamWriter client = response.getWriter();
-//            client.write("hello world");
-//
-//            client.flush();
-//            Thread dummyReq = new Thread(() -> {
-//                while (true) {
-//                    try {
-//                        String header =  request.reqBuffer.readLine();
-//                        if (header!=null) {
-//                            System.out.println(header);
-//                        }
-//                    } catch (IOException e) {
-//                        System.out.println(Thread.currentThread());
-//                        System.out.println("exception reading request"+"\n"+e.getMessage());
-////                        break;
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            });
-//            dummyReq.start();
-//            response.write("1");
+            String reqFile = request.firstLine.split(" ")[1];
+            response.setContentType(reqFile.endsWith(".js")?"application/javascript;charset=UTF-8"
+                    :reqFile.endsWith(".css")?"text/css;charset=UTF-8":"text/html;charset=UTF-8");
             for (String name : request.getparameterNames()) {
                 response.write(name + "=" + request.getParameterValues(name));
             }
-            Optional<Student> call = repo.findbyId(Integer.parseInt(request.getParameterValues("id")));
-            response.write("id : "+String.valueOf(call.get().getId())+
-                                "\nusername : " + String.valueOf(call.get().getUsername())+
-                                "\npassword : " + String.valueOf(call.get().getPassword()));
+
+//            Optional<Student> call = repo.findbyId(Integer.parseInt(request.getParameterValues("id")));
+//            response.write("id : "+String.valueOf(call.get().getId())+
+//                                "\nusername : " + String.valueOf(call.get().getUsername())+
+//                                "\npassword : " + String.valueOf(call.get().getPassword()));
+            String indexPath = "src/main/java/org/example/hello-world";
+            File file = new File(reqFile.equals("/")?indexPath+"/index.html":indexPath+reqFile);  //windows
+            System.out.println(file.getAbsolutePath());
+            Scanner htmlReader = new Scanner(file);
+            while(htmlReader.hasNext()){
+                response.write(htmlReader.nextLine());
+            }
             response.flush();
         } catch (Exception e) {
+            response.flush();
             e.printStackTrace();
         }
     }

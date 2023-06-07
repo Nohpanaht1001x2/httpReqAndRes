@@ -28,13 +28,14 @@ public class Response {
     public void flush() throws IOException {
         resBuffer.write("HTTP/1.1 200\n");
         resBuffer.write("Content-Type: " + metaContent + "\n");
-        resBuffer.write("Access-Control-Allow-Origin: http://localhost:4200\n" +
+        resBuffer.write("Access-Control-Allow-Origin: *\n" +
                 "Access-Control-Allow-Methods: POST, PUT, GET, DELETE, HEAD, OPTIONS");
         resBuffer.newLine();
         resBuffer.newLine();
+        renderRaw(resBuffer,msg);
 //        renderResult(resBuffer, msg);
-        renderParameter(resBuffer, msg);
-        renderContent(resBuffer,msg);
+//        renderParameter(resBuffer, msg);
+//        renderContent(resBuffer,msg);
         resBuffer.flush();
     }
 
@@ -67,6 +68,12 @@ public class Response {
             if (it.hasNext()) {
                 out.write("&");
             }
+        }
+    }
+    private void renderRaw(BufferedWriter out,List<String> headers) throws IOException {
+        Iterator<String> it = headers.iterator();
+        while (it.hasNext()) {
+            out.write(it.next()+"\n");
         }
     }
     private void renderContent (BufferedWriter out,List<String> headers) throws IOException {
